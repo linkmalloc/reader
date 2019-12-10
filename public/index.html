@@ -1,65 +1,174 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/7.5.0/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/7.5.0/firebase-auth.js"></script>
-    <script defer src="/__/firebase/7.5.0/firebase-database.js"></script>
-    <script defer src="/__/firebase/7.5.0/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/7.5.0/firebase-storage.js"></script>
-    <!-- initialize the SDK after all desired features are loaded -->
-    <script defer src="/__/firebase/init.js"></script>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Bookgini Reader Prototype 0.2.0</title>
+    <link rel="stylesheet" href="assets/css/icons.css" />
+    <script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.85/dist/epub.legacy.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+<body>
+    <div class="main-wrapper">
+        <div class="container">
+            <header id="main-header">
+                <button id="toc-button" class="event-buttons toggle-button" data-target="toc-container">
+                    <i class="icon-view_list"></i>
+                </button>
+                <div class="popup-el" id="toc-container" style="padding: 0;">
+                    <ul id="toc-list"></ul>
+                </div>
+                <div class="logo-container">
+                    <a href="/" class="bookgini-logo"><img src="/images/main_logo.png" alt="bookgini logo" /></a>
+                </div>
+                <div class="misc-buttons">
+                    <button id="fullscreen-button" class="event-buttons" title="Toggle fullscreen">
+                        <i class="icon-fullscreen"></i>
+                    </button>
+                    <button id="theme-button" class="event-buttons toggle-button" title="Customize look"
+                        data-target="custom-look">
+                        <i class="icon-palette"></i>
+                    </button>
+                    <button id="settings-button" class="event-buttons toggle-button" title="More settings"
+                        data-target="settings">
+                        <i class="icon-settings"></i>
+                    </button>
+                </div>
+                <div class="popup-el" id="custom-look">
+                    <p class="text-center">
+                        <strong>Choose a theme:</strong>
+                    </p>
+                    <div class="custom-themes">
+                        <div class="custom-theme light" data-theme="light">
+                            Light
+                        </div>
+                        <div class="custom-theme sepia" data-theme="sepia">
+                            Warm
+                        </div>
+                        <div class="custom-theme dark" data-theme="dark">
+                            Dark
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="custom-fontsize">
+                        <button id="less-fontsize" class="icon-zoom_out event-buttons"></button>
+                        <span><strong>Font Size</strong></span>
+                        <button id="more-fontsize" class="icon-zoom_in event-buttons"></button>
+                    </div>
+                    <hr />
+                    <div class="custom-font">
+                        <p class="text-center">
+                            <strong>Choose a font family:</strong>
+                        </p>
+                        <select name="custom-font_family" id="custom-font_family">
+                            <option value="Baskerville" data-serif="true">Baskerville</option>
+                            <option value="Bookerly" data-serif="true">Bookerly</option>
+                            <option value="Georgia" data-serif="true">Georgia</option>
+                            <option value="Helvetica" data-serif="false">Helvetica</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="popup-el" id="settings">
+                    <p>
+                        <button id="add-bookmark" class="event-buttons">
+                            <span class="icon-bookmark"></span> Add Bookmark
+                        </button>
+                    </p>
+                    <p>
+                        <button id="close-book" class="event-buttons">
+                            <span class="icon-sign_out"></span>Close book
+                        </button>
+                    </p>
+                </div>
+            </header>
+            <!-- <button class="icon-previous prev-button fixed-buttons"></button> -->
+            <main id="bookgini-reader"></main>
+            <!-- <button class="icon-next next-button fixed-buttons"></button> -->
+            <footer id="main-footer">
+                <div class="read-progress__container">
+                    <div class="read-progress__bar">
+                        <div id="current-progress" class="read-progress__current">
+                            <div id="read-progress_finder" class="read-progress_finder"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="read-navigation">
+                    <button class="icon-previous prev-button event-buttons"></button>
+                    <div style="margin: 0 1.5rem;">
+                        PAGE <span id="current-page">0</span> OF
+                        <span id="total-pages">...</span>
+                    </div>
+                    <button class="icon-next next-button event-buttons"></button>
+                </div>
+            </footer>
+        </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+    <div class="js_scripts">
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+        <!-- TODO: Add SDKs for Firebase products that you want to use https://firebase.google.com/docs/web/setup#available-libraries -->
+        <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-storage.js"></script>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        <script>
+            // Your web app's Firebase configuration
+            var firebaseConfig = {
+                apiKey: "AIzaSyByBmiBAlj0Oq9kQde-InpYsovEiJcwyUk",
+                authDomain: "bgreader-3f54e.firebaseapp.com",
+                databaseURL: "https://bgreader-3f54e.firebaseio.com",
+                projectId: "bgreader-3f54e",
+                storageBucket: "bgreader-3f54e.appspot.com",
+                messagingSenderId: "203228008986",
+                appId: "1:203228008986:web:fbe98d22eab718a889f7a3",
+                measurementId: "G-B7XZEDH1SV",
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+        </script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <!--[if lt IE 9]>
+                <script>
+                    if (
+                        Object.defineProperty &&
+                        Object.getOwnPropertyDescriptor &&
+                        Object.getOwnPropertyDescriptor(
+                            Element.prototype,
+                            "textContent"
+                        ) &&
+                        !Object.getOwnPropertyDescriptor(
+                            Element.prototype,
+                            "textContent"
+                        ).get
+                    )
+                        (function() {
+                            var innerText = Object.getOwnPropertyDescriptor(
+                                Element.prototype,
+                                "innerText"
+                            );
+                            Object.defineProperty(
+                                Element.prototype,
+                                "textContent",
+                                {
+                                    get: function() {
+                                        return innerText.get.call(this);
+                                    },
+                                    set: function(x) {
+                                        return innerText.set.call(this, x);
+                                    },
+                                }
+                            );
+                        })();
+                </script>
+            <![endif]-->
+        <script src="https://cdn.jsdelivr.net/npm/screenfull@5.0.0/dist/screenfull.js"></script>
+        <script src="assets/js/app.js?nocache=1"></script>
+    </div>
+</body>
 
-        try {
-          let app = firebase.app();
-          let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
-          document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
 </html>

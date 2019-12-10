@@ -1,0 +1,24 @@
+{
+  "name": "bookgini_reader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "glob": "^7.1.6",
+    "xml2js": "^0.4.22"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linkmalloc/bookgini_reader.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/linkmalloc/bookgini_reader/issues"
+  },
+  "homepage": "https://github.com/linkmalloc/bookgini_reader#readme"
+}
