@@ -32,23 +32,25 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async (object) => {
         });
 
         return parser.parseString(data, function (err, xml) {
-            fs.writeFile(tempFilePath, JSON.stringify(xml), function (err) {
-                if (err) {
-                    return console.log(err);
-                }
-
-                const jsonName = `json_${fileName}`;
-                const jsonPath = path.join(path.dirname(filePath), jsonName);
-
-                // Uploading the thumbnail.
-                bucket.upload(tempFilePath, {
-                    destination: jsonPath,
-                    metadata: metadata,
-                });
-
-                // Once the thumbnail has been uploaded delete the local file to free up disk space.
-                return fs.unlinkSync(tempFilePath);
-            });
+            // fs.writeFile(tempFilePath, JSON.stringify(xml), function (err) {
+            //     if (err) {
+            //         return console.log(err);
+            //     }
+            // });
+            console.log(JSON.stringify(xml));
+            return fs.unlinkSync(tempFilePath);
         });
     });
+
+    // const jsonName = `json_${fileName}`;
+    // const jsonPath = path.join(path.dirname(filePath), jsonName);
+
+    // // Uploading the thumbnail.
+    // await bucket.upload(tempFilePath, {
+    //     destination: jsonPath,
+    //     metadata: metadata,
+    // });
+
+    // // Once the thumbnail has been uploaded delete the local file to free up disk space.
+    // return fs.unlinkSync(tempFilePath);
 });
