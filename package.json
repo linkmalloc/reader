@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+<<<<<<< HEAD
     "@gxl/epub-parser": "^2.0.2",
+=======
+    "dotenv": "^8.2.0",
+    "firebase-admin": "^8.8.0",
+>>>>>>> 281ac4876c32b6665332484bb1417c41ac88ae41
     "glob": "^7.1.6",
     "xml2js": "^0.4.22"
   },
