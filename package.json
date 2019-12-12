@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "dotenv": "^8.2.0",
+    "firebase-admin": "^8.8.0",
     "glob": "^7.1.6",
     "xml2js": "^0.4.22"
   },
