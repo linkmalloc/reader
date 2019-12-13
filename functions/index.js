@@ -1,19 +1,17 @@
 // The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
-const functions = require('firebase-functions');
+const functions = require("firebase-functions");
 
 // The Firebase Admin SDK to access the Firebase Realtime Database.
-const admin = require('firebase-admin');
+const admin = require("firebase-admin");
 admin.initializeApp();
 
-const path = require('path');
-const os = require('os');
-const fs = require('fs');
-const xml2js = require('xml2js');
-const {
-    parseEpub
-} = require("@gxl/epub-parser");
+const path = require("path");
+const os = require("os");
+const fs = require("fs");
+const xml2js = require("xml2js");
+const { parseEpub } = require("@gxl/epub-parser");
 
-exports.xhtmltojson = functions.storage.object().onFinalize(async (object) => {
+exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
     const fileBucket = object.bucket;
     const filePath = object.name;
     const contentType = object.contentType;
@@ -24,27 +22,55 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async (object) => {
         contentType: contentType,
     };
 
-    if (contentType.startsWith('application/epub')) {
+    if (contentType.startsWith("application/epub")) {
         await bucket.file(filePath).download({
-            destination: tempFilePath
+            destination: tempFilePath,
         });
-        console.log('File downloaded locally to', tempFilePath);
+        console.log("File downloaded locally to", tempFilePath);
 
         return parseEpub(tempFilePath).then(result => {
             let counter = 0;
 
             result.sections.forEach(section => {
-                xml2js.parseString(section["htmlString"], function (err, result) {
-                    // fs.writeFile("/tmp/json_" + counter + ".json", JSON.stringify(result), function (err) {
-                    //     if (err)
-                    //         console.log("Error creating json")
+                xml2js.parseString(section["htmlString"], function(
+                    err,
+                    result
+                ) {
+                    // storageRef.putString(JSON.stringify(result)).then(function (snapshot) {
+                    //     console.log('Uploaded a raw string!');
                     // });
-                    console.log(result);
+                    // let convertedFile = bucket.file("json_" + counter + ".json");
+                    // convertedFile.
+                    let jsonName = "converted_" + counter + ".json";
+                    let convertedFile = path.join(os.tmpdir(), jsonName);
+                    // const jsonPath = path.join(
+                    //     path.dirname(filePath),
+                    //     jsonName
+                    // );
+                    fs.writeFile(
+                        convertedFile,
+                        JSON.stringify(result),
+                        function(err) {
+                            if (err) console.log("Error creating json");
+                        }
+                    );
+                    bucket.upload(convertedFile, {
+                        metadata: { contentType: "application/json" },
+                    });
                     counter++;
                 });
             });
-            if (counter === result.sections.length)
-                return fs.unlinkSync(tempFilePath);
+            if (counter === result.sections.length) {
+                fs.readdir(os.tmpdir(), (err, files) => {
+                    if (err) throw err;
+
+                    for (const file of files) {
+                        fs.unlinkSync(path.join(os.tmpdir(), file), err => {
+                            if (err) throw err;
+                        });
+                    }
+                });
+            }
         });
 
         // return fs.readFile(tempFilePath, function (err, data) {
