@@ -35,33 +35,39 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
     console.log("File downloaded locally to", tempFilePath);
 
     // Start parsing the epub
-    parseEpub(tempFilePath).then(result => {
+    return parseEpub(tempFilePath).then(result => {
         let bookInfo = {
             title: result.info.title,
             author: result.info.author,
-            publisher: result.info.publisher
-        }
+            publisher: result.info.publisher,
+        };
         let counter = 0;
-        let bookDoc = booksCollection.add(bookInfo);
-        // let bookDocRef = booksCollection.doc(bookDoc);
-        // let bookSubCollection = bookDocRef.collection("sections");
+        let bookDoc = booksCollection
+            .add(bookInfo)
+            .then(ref => {
+                let bookDocRef = booksCollection.doc(ref.id);
 
-        // // loop each section and convert to json
-        // result.sections.forEach(section => {
-        //     xml2js.parseString(section["htmlString"], function (
-        //         err,
-        //         json
-        //     ) {
-        //         bookSubCollection.add(json)
-        //         counter++;
-        //     });
-        // });
+                // loop each section and convert to json
+                for (let i = 0; i <= result.sections.length; i++) {
+                    xml2js.parseString(result.sections[i]["htmlString"], function (err, json) {
+                        let x = bookDocRef.collection("sections").add(json).then(x => {
+                            console.log("Added:", x.id);
+                        });
+                        counter++;
+                    });
+                }
 
-        // If done converting and saving, remove file from temp directory
-        if (counter === result.sections.length) {
-            fs.unlinkSync(tempFilePath, err => {
-                if (err) throw err;
+                // If done converting and saving, remove file from temp directory
+                // if (counter === result.sections.length) {
+                return fs.unlinkSync(tempFilePath, err => {
+                    if (err) throw err;
+
+                    console.log("Removed temp file.");
+                });
+                // }
+            })
+            .catch(err => {
+                console.log("Error creating document:", err);
             });
-        }
     });
 });
