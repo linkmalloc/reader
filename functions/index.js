@@ -22,31 +22,28 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
         contentType: contentType,
     };
 
+    // Check if the uploaded file is an epub, if yes, continue, otherwise, exit.
     if (contentType.startsWith("application/epub")) {
+        // download the epub file to Cloud Functions' temp directory
         await bucket.file(filePath).download({
             destination: tempFilePath,
         });
         console.log("File downloaded locally to", tempFilePath);
 
+        // Start parsing the epub
         return parseEpub(tempFilePath).then(result => {
             let counter = 0;
 
+            // loop each section and convert to json
             result.sections.forEach(section => {
                 xml2js.parseString(section["htmlString"], function(
                     err,
                     result
                 ) {
-                    // storageRef.putString(JSON.stringify(result)).then(function (snapshot) {
-                    //     console.log('Uploaded a raw string!');
-                    // });
-                    // let convertedFile = bucket.file("json_" + counter + ".json");
-                    // convertedFile.
                     let jsonName = "converted_" + counter + ".json";
                     let convertedFile = path.join(os.tmpdir(), jsonName);
-                    // const jsonPath = path.join(
-                    //     path.dirname(filePath),
-                    //     jsonName
-                    // );
+
+                    // create file (the converted json) in the temp directory
                     fs.writeFile(
                         convertedFile,
                         JSON.stringify(result),
@@ -54,12 +51,16 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
                             if (err) console.log("Error creating json");
                         }
                     );
+
+                    // upload the file to Firebase Storage
                     bucket.upload(convertedFile, {
                         metadata: { contentType: "application/json" },
                     });
                     counter++;
                 });
             });
+
+            // If done converting and saving, remove all files from temp directory
             if (counter === result.sections.length) {
                 fs.readdir(os.tmpdir(), (err, files) => {
                     if (err) throw err;
@@ -72,33 +73,5 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
                 });
             }
         });
-
-        // return fs.readFile(tempFilePath, function (err, data) {
-        //     var parser = new xml2js.Parser({
-        //         explicitArray: false
-        //     });
-
-        //     return parser.parseString(data, function (err, xml) {
-        //         // fs.writeFile(tempFilePath, JSON.stringify(xml), function (err) {
-        //         //     if (err) {
-        //         //         return console.log(err);
-        //         //     }
-        //         // });
-        //         console.log(JSON.stringify(xml));
-        //         return fs.unlinkSync(tempFilePath);
-        //     });
-        // });
-
-        // const jsonName = `json_${fileName}`;
-        // const jsonPath = path.join(path.dirname(filePath), jsonName);
-
-        // // Uploading the thumbnail.
-        // await bucket.upload(tempFilePath, {
-        //     destination: jsonPath,
-        //     metadata: metadata,
-        // });
-
-        // // Once the thumbnail has been uploaded delete the local file to free up disk space.
-        // return fs.unlinkSync(tempFilePath);
     }
 });
