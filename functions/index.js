@@ -43,19 +43,19 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
         }
         let counter = 0;
         let bookDoc = booksCollection.add(bookInfo);
-        let bookDocRef = booksCollection.doc(bookDoc);
-        let bookSubCollection = bookDocRef.collection("sections");
+        // let bookDocRef = booksCollection.doc(bookDoc);
+        // let bookSubCollection = bookDocRef.collection("sections");
 
-        // loop each section and convert to json
-        result.sections.forEach(section => {
-            xml2js.parseString(section["htmlString"], function (
-                err,
-                json
-            ) {
-                bookSubCollection.add(json)
-                counter++;
-            });
-        });
+        // // loop each section and convert to json
+        // result.sections.forEach(section => {
+        //     xml2js.parseString(section["htmlString"], function (
+        //         err,
+        //         json
+        //     ) {
+        //         bookSubCollection.add(json)
+        //         counter++;
+        //     });
+        // });
 
         // If done converting and saving, remove file from temp directory
         if (counter === result.sections.length) {
