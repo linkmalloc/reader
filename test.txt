@@ -1,0 +1,7 @@
+access for book details:
+curl https://reader.bookgini.com/books/{book_id}
+access for sections - streaming:
+curl https://reader.bookgini.com/books/{book_id}/sections/{section_id}
+
+curl https://api.bookgini.com/books/{book_id}/{chapter_id}
+

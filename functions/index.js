@@ -35,39 +35,44 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
     console.log("File downloaded locally to", tempFilePath);
 
     // Start parsing the epub
-    return parseEpub(tempFilePath).then(result => {
+    return parseEpub(tempFilePath).then(async result => {
         let bookInfo = {
             title: result.info.title,
             author: result.info.author,
             publisher: result.info.publisher,
         };
         let counter = 0;
-        let bookDoc = booksCollection
+        let bookDoc = await booksCollection
             .add(bookInfo)
             .then(ref => {
                 let bookDocRef = booksCollection.doc(ref.id);
 
                 // loop each section and convert to json
-                for (let i = 0; i <= result.sections.length; i++) {
-                    xml2js.parseString(result.sections[i]["htmlString"], function (err, json) {
-                        let x = bookDocRef.collection("sections").add(json).then(x => {
-                            console.log("Added:", x.id);
-                        });
-                        counter++;
+                // for (let i = 0; i <= 2; i++) {
+                bookDocRef.collection("sections").add(JSON.stringify(result.sections[1])).then(async addedSection => {
+                    await bookDocRef.update({
+                        sectionsInOrder: {
+                            [counter]: addedSection.id
+                        }
                     });
-                }
+                    console.log("Added:", addedSection.id);
+                });
+                counter++;
+                // }
 
                 // If done converting and saving, remove file from temp directory
-                // if (counter === result.sections.length) {
-                return fs.unlinkSync(tempFilePath, err => {
-                    if (err) throw err;
+                if (counter === result.sections.length) {
+                    return fs.unlinkSync(tempFilePath, err => {
+                        if (err) throw err;
 
-                    console.log("Removed temp file.");
-                });
-                // }
+                        console.log("Removed temp file.");
+                    });
+                }
             })
             .catch(err => {
-                console.log("Error creating document:", err);
+                return console.log("Error creating document:", err);
             });
+
+        return bookDoc;
     });
 });
