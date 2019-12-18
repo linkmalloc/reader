@@ -35,39 +35,43 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
     console.log("File downloaded locally to", tempFilePath);
 
     // Start parsing the epub
-    return parseEpub(tempFilePath).then(async result => {
+    return parseEpub(tempFilePath).then(result => {
         let bookInfo = {
             title: result.info.title,
             author: result.info.author,
             publisher: result.info.publisher,
         };
-        let counter = 0;
-        let bookDoc = await booksCollection
+
+        let bookDoc = booksCollection
             .add(bookInfo)
             .then(ref => {
+                let counter = 0;
                 let bookDocRef = booksCollection.doc(ref.id);
+                let sectionInOrder = {};
 
                 // loop each section and convert to json
-                // for (let i = 0; i <= 2; i++) {
-                bookDocRef.collection("sections").add(JSON.stringify(result.sections[1])).then(async addedSection => {
-                    await bookDocRef.update({
-                        sectionsInOrder: {
-                            [counter]: addedSection.id
-                        }
+                result.sections.forEach(section => {
+                    return xml2js.parseString(section["htmlString"], (err, json) => {
+                        if (err)
+                            return console.log("Cannot parse", err);
+
+                        return bookDocRef.collection("sections").add(JSON.parse(JSON.stringify(json))).then(addedSection => {
+                            sectionInOrder[counter] = addedSection.id;
+                            bookDocRef.update({
+                                sectionInOrder: sectionInOrder
+                            });
+                            counter++;
+                            return console.log("Added:", addedSection.id);
+                        }).catch(err => {
+                            return console.log("Cannot add sections", err);
+                        });
                     });
-                    console.log("Added:", addedSection.id);
+                })
+
+                return fs.unlinkSync(tempFilePath, err => {
+                    if (err) throw err;
+                    console.log("Removed temp file.");
                 });
-                counter++;
-                // }
-
-                // If done converting and saving, remove file from temp directory
-                if (counter === result.sections.length) {
-                    return fs.unlinkSync(tempFilePath, err => {
-                        if (err) throw err;
-
-                        console.log("Removed temp file.");
-                    });
-                }
             })
             .catch(err => {
                 return console.log("Error creating document:", err);
