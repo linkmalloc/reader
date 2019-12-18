@@ -1,194 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <title>Bookgini Reader Prototype 0.2.0</title>
-        <link rel="stylesheet" href="assets/css/icons.css" />
-        <script src="assets/js/epub.legacy.js"></script>
-        <link
-            href="https://fonts.googleapis.com/css?family=Raleway:400,700&display=swap"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" href="assets/css/style.css" />
-    </head>
 
-    <body>
-        <div class="main-wrapper">
-            <div class="container">
-                <header id="main-header">
-                    <button
-                        id="toc-button"
-                        class="event-buttons toggle-button"
-                        data-target="toc-container"
-                    >
-                        <i class="icon-view_list"></i>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Bookgini Reader Prototype 0.2.0</title>
+    <link rel="stylesheet" href="assets/css/icons.css" />
+    <script src="assets/js/epub.legacy.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <div class="container">
+            <header id="main-header">
+                <button id="toc-button" class="event-buttons toggle-button" data-target="toc-container">
+                    <i class="icon-view_list"></i>
+                </button>
+                <div class="popup-el" id="toc-container" style="padding: 0;">
+                    <ul id="toc-list"></ul>
+                </div>
+                <div class="logo-container">
+                    <a href="/" class="bookgini-logo"><img src="/images/main_logo.png" alt="bookgini logo" /></a>
+                </div>
+                <div class="misc-buttons">
+                    <button id="fullscreen-button" class="event-buttons" title="Toggle fullscreen">
+                        <i class="icon-fullscreen"></i>
                     </button>
-                    <div
-                        class="popup-el"
-                        id="toc-container"
-                        style="padding: 0;"
-                    >
-                        <ul id="toc-list"></ul>
+                    <button id="theme-button" class="event-buttons toggle-button" title="Customize look"
+                        data-target="custom-look">
+                        <i class="icon-palette"></i>
+                    </button>
+                    <button id="settings-button" class="event-buttons toggle-button" title="More settings"
+                        data-target="settings">
+                        <i class="icon-settings"></i>
+                    </button>
+                </div>
+                <div class="popup-el" id="custom-look">
+                    <p class="text-center">
+                        <strong>Choose a theme:</strong>
+                    </p>
+                    <div class="custom-themes">
+                        <div class="custom-theme light" data-theme="light">
+                            Light
+                        </div>
+                        <div class="custom-theme sepia" data-theme="sepia">
+                            Warm
+                        </div>
+                        <div class="custom-theme dark" data-theme="dark">
+                            Dark
+                        </div>
                     </div>
-                    <div class="logo-container">
-                        <a href="/" class="bookgini-logo"
-                            ><img
-                                src="/images/main_logo.png"
-                                alt="bookgini logo"
-                        /></a>
+                    <hr />
+                    <div class="custom-fontsize">
+                        <button id="less-fontsize" class="icon-zoom_out event-buttons"></button>
+                        <span><strong>Font Size</strong></span>
+                        <button id="more-fontsize" class="icon-zoom_in event-buttons"></button>
                     </div>
-                    <div class="misc-buttons">
-                        <button
-                            id="fullscreen-button"
-                            class="event-buttons"
-                            title="Toggle fullscreen"
-                        >
-                            <i class="icon-fullscreen"></i>
-                        </button>
-                        <button
-                            id="theme-button"
-                            class="event-buttons toggle-button"
-                            title="Customize look"
-                            data-target="custom-look"
-                        >
-                            <i class="icon-palette"></i>
-                        </button>
-                        <button
-                            id="settings-button"
-                            class="event-buttons toggle-button"
-                            title="More settings"
-                            data-target="settings"
-                        >
-                            <i class="icon-settings"></i>
-                        </button>
-                    </div>
-                    <div class="popup-el" id="custom-look">
+                    <hr />
+                    <div class="custom-font">
                         <p class="text-center">
-                            <strong>Choose a theme:</strong>
+                            <strong>Choose a font family:</strong>
                         </p>
-                        <div class="custom-themes">
-                            <div class="custom-theme light" data-theme="light">
-                                Light
-                            </div>
-                            <div class="custom-theme sepia" data-theme="sepia">
-                                Warm
-                            </div>
-                            <div class="custom-theme dark" data-theme="dark">
-                                Dark
-                            </div>
-                        </div>
-                        <hr />
-                        <div class="custom-fontsize">
-                            <button
-                                id="less-fontsize"
-                                class="icon-zoom_out event-buttons"
-                            ></button>
-                            <span><strong>Font Size</strong></span>
-                            <button
-                                id="more-fontsize"
-                                class="icon-zoom_in event-buttons"
-                            ></button>
-                        </div>
-                        <hr />
-                        <div class="custom-font">
-                            <p class="text-center">
-                                <strong>Choose a font family:</strong>
-                            </p>
-                            <select
-                                name="custom-font_family"
-                                id="custom-font_family"
-                            >
-                                <option value="Baskerville" data-serif="true"
-                                    >Baskerville</option
-                                >
-                                <option value="Bookerly" data-serif="true"
-                                    >Bookerly</option
-                                >
-                                <option value="Georgia" data-serif="true"
-                                    >Georgia</option
-                                >
-                                <option value="Helvetica" data-serif="false"
-                                    >Helvetica</option
-                                >
-                            </select>
+                        <select name="custom-font_family" id="custom-font_family">
+                            <option value="Baskerville" data-serif="true">Baskerville</option>
+                            <option value="Bookerly" data-serif="true">Bookerly</option>
+                            <option value="Georgia" data-serif="true">Georgia</option>
+                            <option value="Helvetica" data-serif="false">Helvetica</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="popup-el" id="settings">
+                    <p>
+                        <button id="add-bookmark" class="event-buttons">
+                            <span class="icon-bookmark"></span> Add Bookmark
+                        </button>
+                    </p>
+                    <p>
+                        <button id="close-book" class="event-buttons">
+                            <span class="icon-sign_out"></span>Close book
+                        </button>
+                    </p>
+                </div>
+            </header>
+            <!-- <button class="icon-previous prev-button fixed-buttons"></button> -->
+            <main id="bookgini-reader"></main>
+            <!-- <button class="icon-next next-button fixed-buttons"></button> -->
+            <footer id="main-footer">
+                <div class="read-progress__container">
+                    <div class="read-progress__bar">
+                        <div id="current-progress" class="read-progress__current">
+                            <div id="read-progress_finder" class="read-progress_finder"></div>
                         </div>
                     </div>
-                    <div class="popup-el" id="settings">
-                        <p>
-                            <button id="add-bookmark" class="event-buttons">
-                                <span class="icon-bookmark"></span> Add Bookmark
-                            </button>
-                        </p>
-                        <p>
-                            <button id="close-book" class="event-buttons">
-                                <span class="icon-sign_out"></span>Close book
-                            </button>
-                        </p>
+                </div>
+                <div class="read-navigation">
+                    <button class="icon-previous prev-button event-buttons"></button>
+                    <div style="margin: 0 1.5rem;">
+                        PAGE <span id="current-page">0</span> OF
+                        <span id="total-pages">...</span>
                     </div>
-                </header>
-                <!-- <button class="icon-previous prev-button fixed-buttons"></button> -->
-                <main id="bookgini-reader"></main>
-                <!-- <button class="icon-next next-button fixed-buttons"></button> -->
-                <footer id="main-footer">
-                    <div class="read-progress__container">
-                        <div class="read-progress__bar">
-                            <div
-                                id="current-progress"
-                                class="read-progress__current"
-                            >
-                                <div
-                                    id="read-progress_finder"
-                                    class="read-progress_finder"
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="read-navigation">
-                        <button
-                            class="icon-previous prev-button event-buttons"
-                        ></button>
-                        <div style="margin: 0 1.5rem;">
-                            PAGE <span id="current-page">0</span> OF
-                            <span id="total-pages">...</span>
-                        </div>
-                        <button
-                            class="icon-next next-button event-buttons"
-                        ></button>
-                    </div>
-                </footer>
-            </div>
+                    <button class="icon-next next-button event-buttons"></button>
+                </div>
+            </footer>
         </div>
-        <div class="js_scripts">
-            <!-- The core Firebase JS SDK is always required and must be listed first -->
-            <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
-            <!-- TODO: Add SDKs for Firebase products that you want to use https://firebase.google.com/docs/web/setup#available-libraries -->
-            <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js"></script>
-            <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-storage.js"></script>
+    </div>
+    <div class="js_scripts">
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+        <!-- TODO: Add SDKs for Firebase products that you want to use https://firebase.google.com/docs/web/setup#available-libraries -->
+        <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-storage.js"></script>
 
-            <script>
-                // Your web app's Firebase configuration
-                var firebaseConfig = {
-                    apiKey: "AIzaSyByBmiBAlj0Oq9kQde-InpYsovEiJcwyUk",
-                    authDomain: "bgreader-3f54e.firebaseapp.com",
-                    databaseURL: "https://bgreader-3f54e.firebaseio.com",
-                    projectId: "bgreader-3f54e",
-                    storageBucket: "bgreader-3f54e.appspot.com",
-                    messagingSenderId: "203228008986",
-                    appId: "1:203228008986:web:fbe98d22eab718a889f7a3",
-                    measurementId: "G-B7XZEDH1SV",
-                };
-                // Initialize Firebase
-                firebase.initializeApp(firebaseConfig);
-                firebase.analytics();
-            </script>
-            <script
-                src="https://code.jquery.com/jquery-3.4.1.min.js"
-                integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-                crossorigin="anonymous"
-            ></script>
-            <!--[if lt IE 9]>
+        <script>
+            // Your web app's Firebase configuration
+            var firebaseConfig = {
+                apiKey: "AIzaSyByBmiBAlj0Oq9kQde-InpYsovEiJcwyUk",
+                authDomain: "bgreader-3f54e.firebaseapp.com",
+                databaseURL: "https://bgreader-3f54e.firebaseio.com",
+                projectId: "bgreader-3f54e",
+                storageBucket: "bgreader-3f54e.appspot.com",
+                messagingSenderId: "203228008986",
+                appId: "1:203228008986:web:fbe98d22eab718a889f7a3",
+                measurementId: "G-B7XZEDH1SV",
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+        </script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <!--[if lt IE 9]>
                 <script>
                     if (
                         Object.defineProperty &&
@@ -222,8 +166,9 @@
                         })();
                 </script>
             <![endif]-->
-            <script src="https://cdn.jsdelivr.net/npm/screenfull@5.0.0/dist/screenfull.js"></script>
-            <script src="assets/js/app.js"></script>
-        </div>
-    </body>
+        <script src="https://cdn.jsdelivr.net/npm/screenfull@5.0.0/dist/screenfull.js"></script>
+        <script src="assets/js/app.js"></script>
+    </div>
+</body>
+
 </html>
