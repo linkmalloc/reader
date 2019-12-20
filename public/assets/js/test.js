@@ -23,30 +23,23 @@ var setWindowHeight = function setWindowHeight() {
 // setWindowHeight();
 
 var db = firebase.firestore();
-var docRef = db.collection("books").doc("aHpMeqQ0GLSoPq0yqjqc");
-var sections = docRef.collection("sections");
+var docRef = db.collection("books").doc("jkDPgf4Z6rJaTOOY8VXR");
+var section = docRef.collection("sections").doc("section_11");
 
-docRef.get().then(function (doc) {
+section.get().then(function (doc) {
     if (doc.exists) {
-        console.log("Document data:", doc.data());
+        var body = doc.data()["html"]["body"][0]["div"];
+        $(body[0]).map(async (i, item) => {
+            console.log(item.p);
+            item.p.forEach(function (value, index) {
+                if (value._ !== undefined) {
+                    $("#bookgini-reader").append("<p>" + value._ + "</p>");
+                }
+            })
+        });
     } else {
         console.log("No such document!");
     }
 }).catch(function (error) {
     console.log("Error getting document:", error);
 });
-
-let x = [];
-sections.get().then(querySnapshot => {
-    // for (let i = 2; i <= 3; i++) {
-    var doc = querySnapshot.docs[4];
-    var body = doc.get("html")["body"][0]["div"];
-    $(body[0]).map(async (i, item) => {
-        item.p.forEach(function (value, index) {
-            if (value._ !== undefined) {
-                $("#bookgini-reader").append("<p>" + value._ + "</p>");
-            }
-        })
-    });
-    // }
-})

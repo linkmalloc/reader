@@ -49,6 +49,7 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
 
                 // loop each section and convert to json
                 result.sections.forEach(section => {
+                    counter++;
                     return xml2js.parseString(
                         section["htmlString"],
                         (err, json) => {
@@ -56,13 +57,10 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
 
                             return bookDocRef
                                 .collection("sections")
-                                .add(JSON.parse(JSON.stringify(json)))
-                                .then(async addedSection => {
+                                .doc("section_" + counter)
+                                .set(JSON.parse(JSON.stringify(json)))
+                                .then(addedSection => {
                                     sectionInOrder[counter] = addedSection.id;
-                                    await bookDocRef.update({
-                                        sectionInOrder: sectionInOrder,
-                                    });
-                                    counter++;
                                     return console.log("Added:", addedSection);
                                 })
                                 .catch(err => {
