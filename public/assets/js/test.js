@@ -24,10 +24,11 @@ var setWindowHeight = function setWindowHeight() {
 var collectionURL = "https://firestore.googleapis.com/v1/projects/bgreader-3f54e/databases/(default)/documents/books/jkDPgf4Z6rJaTOOY8VXR/sections/";
 var currentURL = new URL(window.location.href);
 var sectionParam = currentURL.searchParams.get("section");
+var bookParam = currentURL.searchParams.get("book"); //jkDPgf4Z6rJaTOOY8VXR
 
 var firestoreParser = firebase.functions().httpsCallable('firestoreParser');
 firestoreParser({
-    bookID: "jkDPgf4Z6rJaTOOY8VXR",
+    bookID: bookParam,
     sectionID: "section_" + sectionParam
 }).then(function (result) {
     var body = JSON.parse(result.data);
