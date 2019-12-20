@@ -49,24 +49,30 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
 
                 // loop each section and convert to json
                 result.sections.forEach(section => {
-                    return xml2js.parseString(section["htmlString"], (err, json) => {
-                        if (err)
-                            return console.log("Cannot parse", err);
+                    return xml2js.parseString(
+                        section["htmlString"],
+                        (err, json) => {
+                            if (err) return console.log("Cannot parse", err);
 
-                        return bookDocRef.collection("sections")
-                            .doc("section_" + counter)
-                            .set(JSON.parse(JSON.stringify(json)))
-                            .then(addedSection => {
-                                sectionInOrder[counter] = addedSection.id;
-                                // bookDocRef.update({
-                                //     sectionInOrder: sectionInOrder
-                                // });
-                                counter++;
-                                return console.log("Added:", addedSection);
-                            }).catch(err => {
-                                return console.log("Cannot add sections", err);
-                            });
-                    });
+                            return bookDocRef
+                                .collection("sections")
+                                .add(JSON.parse(JSON.stringify(json)))
+                                .then(async addedSection => {
+                                    sectionInOrder[counter] = addedSection.id;
+                                    await bookDocRef.update({
+                                        sectionInOrder: sectionInOrder,
+                                    });
+                                    counter++;
+                                    return console.log("Added:", addedSection);
+                                })
+                                .catch(err => {
+                                    return console.log(
+                                        "Cannot add sections",
+                                        err
+                                    );
+                                });
+                        }
+                    );
                 });
 
                 return fs.unlinkSync(tempFilePath, err => {
