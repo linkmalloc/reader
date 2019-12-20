@@ -39,11 +39,13 @@ docRef.get().then(function (doc) {
 let x = [];
 sections.get().then(querySnapshot => {
     // for (let i = 2; i <= 3; i++) {
-    var doc = querySnapshot.docs[0];
+    var doc = querySnapshot.docs[4];
     var body = doc.get("html")["body"][0]["div"];
     $(body[0]).map(async (i, item) => {
         item.p.forEach(function (value, index) {
-            $("#bookgini-reader").append("<p>" + value._ + "</p>");
+            if (value._ !== undefined) {
+                $("#bookgini-reader").append("<p>" + value._ + "</p>");
+            }
         })
     });
     // }
