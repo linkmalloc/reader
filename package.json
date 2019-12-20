@@ -9,6 +9,7 @@
     "firebase": "^7.6.0",
     "firebase-admin": "^8.8.0",
     "glob": "^7.1.6",
+    "node-fetch": "^2.6.0",
     "xml2js": "^0.4.22"
   },
   "devDependencies": {},

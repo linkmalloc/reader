@@ -4,10 +4,12 @@ const admin = require("firebase-admin");
 const firestore = require("@google-cloud/firestore");
 admin.initializeApp();
 
+const fetch = require("node-fetch");
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
 const xml2js = require("xml2js");
+const FireStoreParser = require('firestore-parser');
 const {
     parseEpub
 } = require("@gxl/epub-parser");
@@ -85,3 +87,14 @@ exports.xhtmltojson = functions.storage.object().onFinalize(async object => {
         return bookDoc;
     });
 });
+
+exports.firestoreParser = functions.https.onCall(async (data, context) => {
+    const projectID = 'bgreader-3f54e';
+    const url = `https://firestore.googleapis.com/v1beta1/projects/${projectID}/databases/(default)/documents/books/${data.bookID}/sections/${data.sectionID}`;
+
+    const response = await fetch(url);
+    const json = await response.json();
+    const parsed = await FireStoreParser(json);
+    console.log(JSON.stringify(parsed));
+    return JSON.stringify(parsed.fields.html.body);
+})

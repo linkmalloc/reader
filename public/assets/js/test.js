@@ -10,7 +10,7 @@ var firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-firebase.analytics();
+var functions = firebase.functions();
 
 var setWindowHeight = function setWindowHeight() {
     var headerH = $("#main-header").outerHeight();
@@ -21,25 +21,52 @@ var setWindowHeight = function setWindowHeight() {
 };
 
 // setWindowHeight();
+var collectionURL = "https://firestore.googleapis.com/v1/projects/bgreader-3f54e/databases/(default)/documents/books/jkDPgf4Z6rJaTOOY8VXR/sections/";
+var currentURL = new URL(window.location.href);
+var sectionParam = currentURL.searchParams.get("section");
 
-var db = firebase.firestore();
-var docRef = db.collection("books").doc("jkDPgf4Z6rJaTOOY8VXR");
-var section = docRef.collection("sections").doc("section_11");
-
-section.get().then(function (doc) {
-    if (doc.exists) {
-        var body = doc.data()["html"]["body"][0]["div"];
-        $(body[0]).map(async (i, item) => {
-            console.log(item.p);
-            item.p.forEach(function (value, index) {
-                if (value._ !== undefined) {
-                    $("#bookgini-reader").append("<p>" + value._ + "</p>");
-                }
-            })
-        });
-    } else {
-        console.log("No such document!");
-    }
-}).catch(function (error) {
-    console.log("Error getting document:", error);
+var firestoreParser = firebase.functions().httpsCallable('firestoreParser');
+firestoreParser({
+    bookID: "jkDPgf4Z6rJaTOOY8VXR",
+    sectionID: "section_" + sectionParam
+}).then(function (result) {
+    var body = JSON.parse(result.data);
+    var para = body[0].div[0].p;
+    $.each(para, function (p, content) {
+        $.each(content, function (attr, value) {
+            console.log(value);
+            if (attr !== "p") {
+                if (($.isArray(value) || typeof value === 'object'))
+                    return "";
+                $("#bookgini-reader").append("<p>" + value + "</p>");
+            }
+        })
+    })
 });
+
+// fetch(collectionURL + "section_" + sectionParam)
+//     .then(response => response.json())
+//     .then(json => FireStoreParser(json))
+//     .then(json => console.log(json));
+
+// var db = firebase.firestore();
+// var docRef = db.collection("books").doc("jkDPgf4Z6rJaTOOY8VXR");
+// var section = docRef.collection("sections").doc("section_12");
+
+// section.get().then(function (doc) {
+//     if (doc.exists) {
+//         var body = doc.data()["html"]["body"][0]["div"];
+//         $(body[0]).map(async (i, item) => {
+//             // console.log(item.p);
+//             item.p.forEach(function (value, index) {
+//                 if (value._ !== undefined) {
+//                     $("#bookgini-reader").append("<p>" + value._ + "</p>");
+//                 }
+//             })
+//         });
+//     } else {
+//         console.log("No such document!");
+//     }
+// }).catch(function (error) {
+//     console.log("Error getting document:", error);
+// });
